@@ -3,7 +3,7 @@ import requests
 import json
 import asyncio
 
-from websocket_client import websocket_connect
+from pinta.cli.websocket_client import websocket_connect
 
 
 @click.group()
