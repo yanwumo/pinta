@@ -25,6 +25,8 @@ python = "^3.8"
 click = "^7.1.2"
 httpx = "^0.13.3"
 rich = "^2.0.1"
+websockets = "^8.1"
+requests = "^2.23.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

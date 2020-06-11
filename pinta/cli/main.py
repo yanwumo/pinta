@@ -7,7 +7,7 @@ from websocket_client import websocket_connect
 
 
 @click.group()
-def main():
+def pinta():
     pass
 
 
@@ -36,8 +36,18 @@ def connect(job_id):
     asyncio.run(websocket_connect(url))
 
 
-main.add_command(login)
-main.add_command(connect)
+# @click.command()
+# @click.option('--count', default=1, help='Number of greetings.')
+# @click.option('--name', prompt='Your name', help='The person to greet.')
+# def hello(count, name):
+#     """Simple program that greets NAME for a total of COUNT times."""
+#     for x in range(count):
+#         click.echo('Hello %s!' % name)
+
+
+pinta.add_command(login)
+pinta.add_command(connect)
+
 
 if __name__ == '__main__':
-    main()
+    pinta()
