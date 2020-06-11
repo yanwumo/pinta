@@ -1,0 +1,46 @@
+site_name: Pinta
+site_description: Job management on GPU clusters 🍺
+site_url: https://qed.usc.edu/pinta
+
+theme:
+    name: material
+    palette:
+      primary: teal
+      accent: teal
+    font:
+      text: Roboto
+      code: Consolas
+    features:
+    - instant
+
+repo_name: qed-usc/pinta
+repo_url: https://github.com/qed-usc/pinta/
+edit_uri: ""
+
+nav:
+    - Home: index.md
+    # - Reference: reference.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.arithmatex
+
+# extra_css:
+#    - css/custom.css
+
+extra_javascript:
+  - js/mathjax_config.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+  # - 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+
+plugins:
+  - search
+  # - mkdocstrings:
+  #     default_handler: python
+  #     handlers:
+  #       python:
+  #         rendering:
+  #           show_source: true
+  #     watch:
+  #       - pinta
