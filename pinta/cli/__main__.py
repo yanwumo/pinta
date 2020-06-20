@@ -1,9 +1,7 @@
 import click
-import requests
-import json
-import asyncio
 
-from websocket_client import websocket_connect
+from pinta.cli.jobs import get_jobs, get_job_by_id, create_job, ssh, commit
+from pinta.cli.users import login
 
 
 @click.group()
@@ -11,33 +9,25 @@ def main():
     pass
 
 
-@click.command()
-@click.option('--user', prompt='Username', help='Username.')
-@click.option('--password', prompt=True, hide_input=True, help='Password.')
-def login(user, password):
-    url = 'https://qedsim.usc.edu/api/login/access-token'
-    data = {
-        'username': user,
-        'password': password
-    }
-    response = requests.post(url, data=data).json()
-    print(response)
-    if 'access_token' in response:
-        with open('config.json', 'w') as config_file:
-            json.dump(response, config_file)
+@main.group()
+def get():
+    pass
 
 
-@click.command()
-@click.option('--job_id', help='Job id.')
-def connect(job_id):
-    with open('config.json', 'r') as config_file:
-        config = json.load(config_file)
-    url = f"wss://qedsim.usc.edu/api/jobs/{job_id}/exec?authorization=Bearer%20{config['access_token']}"
-    asyncio.run(websocket_connect(url))
+@main.group()
+def create():
+    pass
 
+
+get.add_command(get_jobs)
+get.add_command(get_job_by_id)
+
+create.add_command(create_job)
 
 main.add_command(login)
-main.add_command(connect)
+main.add_command(ssh)
+main.add_command(commit)
+
 
 if __name__ == '__main__':
     main()
