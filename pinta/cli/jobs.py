@@ -2,6 +2,7 @@ import click
 import requests
 import json
 import asyncio
+from urllib.parse import urlencode
 
 from pinta.cli.websocket_client import websocket_connect
 from pinta.cli.auth import BearerAuth
@@ -43,10 +44,13 @@ def ssh(id):
 @click.argument('id', nargs=1)
 @click.option('-i', '--image-name', required=True)
 def commit(id, image_name):
-    url = config.host + f'/api/jobs/{id}/commit'
-    params = {'image_name': image_name}
-    response = requests.post(url, params=params, auth=BearerAuth()).json()
-    print(json.dumps(response, indent=2))
+    url = config.websocket_host + f'/api/jobs/{id}/commit?'
+    params = {
+        'image_name': image_name,
+        'authorization': f'Bearer {config.token}'
+    }
+    url += urlencode(params)
+    asyncio.run(websocket_connect(url))
 
 
 # @main.command()
