@@ -28,7 +28,7 @@ def readchar(quit_pipe):
     return ch
 
 
-async def tunnel1(ws: websockets.WebSocketClientProtocol, quit_pipe):
+async def output_tunnel(ws: websockets.WebSocketClientProtocol, quit_pipe):
     while True:
         data = await ws.recv()
         if len(data) < 1:
@@ -45,7 +45,7 @@ async def tunnel1(ws: websockets.WebSocketClientProtocol, quit_pipe):
             break
 
 
-async def tunnel2(ws: websockets.WebSocketClientProtocol, quit_pipe):
+async def input_tunnel(ws: websockets.WebSocketClientProtocol, quit_pipe):
     loop = asyncio.get_running_loop()
     while True:
         c = await loop.run_in_executor(None, readchar, quit_pipe)
@@ -59,8 +59,8 @@ async def websocket_connect(url):
     (pipe_read, pipe_write) = os.pipe()
     try:
         async with websockets.connect(url) as ws:
-            t1 = asyncio.create_task(tunnel1(ws, pipe_write))
-            t2 = asyncio.create_task(tunnel2(ws, pipe_read))
+            t1 = asyncio.create_task(output_tunnel(ws, pipe_write))
+            t2 = asyncio.create_task(input_tunnel(ws, pipe_read))
             await asyncio.gather(t1, t2)
     except websockets.exceptions.ConnectionClosed:
         print('\r\nConnection closed by server', end='\r\n', file=sys.stderr)
@@ -71,3 +71,37 @@ async def websocket_connect(url):
         os.write(pipe_write, b'.')
         raise
 
+
+async def websocket_write(url, file):
+    try:
+        async with websockets.connect(url) as ws:
+            while True:
+                content = file.read(32768)
+                if not content:
+                    break
+                await ws.send(bytes([STDIN_CHANNEL]) + content)
+    except websockets.exceptions.ConnectionClosed:
+        print('\r\nConnection closed by server', end='\r\n', file=sys.stderr)
+    except OSError:
+        print(f'Connection call to server {url} failed: host not found')
+
+
+async def websocket_read(url, file):
+    try:
+        async with websockets.connect(url) as ws:
+            async for data in ws:
+                if len(data) < 1:
+                    continue
+                channel = data[0]
+                data = data[1:].decode() if len(data) > 1 else ''
+                if channel == STDOUT_CHANNEL:
+                    file.write(data.encode())
+                elif channel == STDERR_CHANNEL:
+                    print(data, end='', file=sys.stderr, flush=True)
+                elif channel == ERROR_CHANNEL:
+                    print(data, end='\r\n', file=sys.stderr)
+                    break
+    except websockets.exceptions.ConnectionClosed:
+        print('\r\nConnection closed by server', end='\r\n', file=sys.stderr)
+    except OSError:
+        print(f'Connection call to server {url} failed: host not found')

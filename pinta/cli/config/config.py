@@ -21,7 +21,7 @@ class Config:
 
     @host.setter
     def host(self, value: str):
-        if not value.startswith('http://') or value.startswith('https://'):
+        if not value.startswith('http://') and not value.startswith('https://'):
             raise ValueError(f'Illegal hostname: "{value}". Check configuration.')
         if value[-1] == '/':
             value = value[:-1]
