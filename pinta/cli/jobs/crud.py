@@ -1,4 +1,5 @@
 import json
+import yaml
 
 import click
 import requests
@@ -11,7 +12,7 @@ from pinta.cli.config.config import config
 def get_jobs():
     url = config.host + '/api/jobs/'
     response = requests.get(url, auth=BearerAuth()).json()
-    print(json.dumps(response, indent=2))
+    print(yaml.dump(response, sort_keys=False))
 
 
 @click.command('job')
@@ -19,7 +20,7 @@ def get_jobs():
 def get_job_by_id(id):
     url = config.host + f'/api/jobs/{id}'
     response = requests.get(url, auth=BearerAuth()).json()
-    print(json.dumps(response, indent=2))
+    print(yaml.dump(response, sort_keys=False))
 
 
 job_types = {'symmetric', 'ps-worker', 'mpi', 'image-builder'}
@@ -29,6 +30,7 @@ job_samples = {
         "description": "",
         "image": "ubuntu:latest",
         "from_private": False,
+        "volumes": "",
         "working_dir": "/",
         "command": 'echo "Hello, world!"; sleep 300',
         "num_replicas": 3,
@@ -40,6 +42,7 @@ job_samples = {
         "description": "",
         "image": "ubuntu:latest",
         "from_private": False,
+        "volumes": "",
         "working_dir": "/",
         "ps_command": 'echo "Hello, PS!"; sleep 300',
         "worker_command": 'echo "Hello, worker!"; sleep 300',
@@ -52,6 +55,7 @@ job_samples = {
         "name": "",
         "description": "",
         "image": "ubuntu:latest",
+        "volumes": "",
         "from_private": False,
         "working_dir": "/",
         "master_command": 'echo "Hello, master!"; sleep 300',
@@ -64,6 +68,7 @@ job_samples = {
         "name": "",
         "description": "",
         "from_image": "ubuntu:latest",
+        "volumes": "",
         "scheduled": True
     }
 }
@@ -77,9 +82,18 @@ def create_job(type, file):
     if file:
         data = file.read()
     else:
-        data = click.edit(json.dumps(job_samples[type], indent=4), extension='.json')
+        data = click.edit(json.dumps(job_samples[type], indent=4), extension='.yaml')
         if data is None:
             print('Exited from editor, job not created')
             return
     response = requests.post(url, data=data, auth=BearerAuth()).json()
-    print(json.dumps(response, indent=2))
+    print(yaml.dump(response, sort_keys=False))
+
+
+@click.command('job')
+@click.argument('id', nargs=1)
+def delete_job_by_id(id):
+    url = config.host + f'/api/jobs/{id}'
+    response = requests.delete(url, auth=BearerAuth()).json()
+    print(yaml.dump(response, sort_keys=False))
+

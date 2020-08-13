@@ -27,6 +27,7 @@ httpx = "^0.13.3"
 rich = "^2.0.1"
 websockets = "^8.1"
 requests = "^2.23.0"
+pyyaml = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
