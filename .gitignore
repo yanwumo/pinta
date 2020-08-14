@@ -197,3 +197,5 @@ dmypy.json
 .pytype/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,emacs,code,idea
+
+pinta/cli/config/config.ini
