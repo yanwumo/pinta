@@ -68,6 +68,7 @@ job_samples = {
         "name": "",
         "description": "",
         "from_image": "ubuntu:latest",
+        "from_private": False,
         "volumes": "",
         "scheduled": True
     }

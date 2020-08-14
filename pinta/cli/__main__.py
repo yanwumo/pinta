@@ -7,6 +7,8 @@ from pinta.cli.jobs.cp import cp
 
 from pinta.cli.volumes.crud import get_volumes, get_volume_by_id, create_volume, delete_volume_by_id
 
+from pinta.cli.images.crud import get_images, get_image_by_id, delete_image_by_id
+
 from pinta.cli.users import login
 
 
@@ -34,12 +36,15 @@ get.add_command(get_jobs)
 get.add_command(get_job_by_id)
 get.add_command(get_volumes)
 get.add_command(get_volume_by_id)
+get.add_command(get_images)
+get.add_command(get_image_by_id)
 
 create.add_command(create_job)
 create.add_command(create_volume)
 
 delete.add_command(delete_job_by_id)
 delete.add_command(delete_volume_by_id)
+delete.add_command(delete_image_by_id)
 
 main.add_command(login)
 main.add_command(exec)
