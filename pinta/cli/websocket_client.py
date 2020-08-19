@@ -28,20 +28,23 @@ def readchar(quit_pipe):
     return ch
 
 
-async def output_tunnel(ws: websockets.WebSocketClientProtocol, quit_pipe):
+async def output_tunnel(ws: websockets.WebSocketClientProtocol, quit_pipe=None):
     while True:
         data = await ws.recv()
         if len(data) < 1:
             continue
         channel = data[0]
         data = data[1:].decode() if len(data) > 1 else ''
+        if data.endswith('\n') and not data.endswith('\r\n'):
+            data = data[:-1] + '\r\n'
         if channel == STDOUT_CHANNEL:
             print(data, end='', flush=True)
         elif channel == STDERR_CHANNEL:
             print(data, end='', file=sys.stderr, flush=True)
         elif channel == ERROR_CHANNEL:
             print(data, end='\r\n', file=sys.stderr)
-            os.write(quit_pipe, b'.')
+            if quit_pipe:
+                os.write(quit_pipe, b'.')
             break
 
 
@@ -70,6 +73,20 @@ async def websocket_connect(url):
     except Exception:
         os.write(pipe_write, b'.')
         raise
+
+
+async def websocket_connect_one_way(url):
+    ws = None
+    try:
+        ws = await websockets.connect(url)
+    except websockets.exceptions.ConnectionClosed:
+        print('\r\nConnection closed by server', end='\r\n', file=sys.stderr)
+
+    if ws:
+        try:
+            await output_tunnel(ws)
+        finally:
+            await ws.close()
 
 
 async def websocket_write(url, file):

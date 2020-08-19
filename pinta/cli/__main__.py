@@ -4,6 +4,7 @@ from pinta.cli.jobs.crud import get_jobs, get_job_by_id, create_job, delete_job_
 from pinta.cli.jobs.exec import exec, ssh
 from pinta.cli.jobs.commit import commit
 from pinta.cli.jobs.cp import cp
+from pinta.cli.jobs.logs import watch, log
 
 from pinta.cli.volumes.crud import get_volumes, get_volume_by_id, create_volume, delete_volume_by_id
 
@@ -51,6 +52,8 @@ main.add_command(exec)
 main.add_command(ssh)
 main.add_command(commit)
 main.add_command(cp)
+main.add_command(log)
+main.add_command(watch)
 
 
 if __name__ == '__main__':
